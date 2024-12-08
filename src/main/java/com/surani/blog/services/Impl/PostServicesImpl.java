@@ -1,9 +1,7 @@
 package com.surani.blog.services.Impl;
 
 import com.surani.blog.exceptions.ResourceNotFoundException;
-import com.surani.blog.models.Category;
 import com.surani.blog.models.Post;
-import com.surani.blog.models.User;
 import com.surani.blog.payloads.Dtos.PostDto;
 import com.surani.blog.repositorys.CategoryRepo;
 import com.surani.blog.repositorys.PostRepo;
@@ -51,7 +49,8 @@ public class PostServicesImpl implements PostServices {
 
     @Override
     public PostDto getPostById(Integer postId) {
-        return null;
+        Post post = this.postRepo.findById(postId).orElseThrow(() -> new ResourceNotFoundException("Post", "id", postId));
+        return this.modelMapper.map(post, PostDto.class);
     }
 
     @Override
@@ -61,21 +60,26 @@ public class PostServicesImpl implements PostServices {
 
     @Override
     public List<PostDto> getAllPosts() {
-        return List.of();
+        List<Post> posts = this.postRepo.findAll();
+        return posts.stream().map(post -> this.modelMapper.map(post, PostDto.class)).toList();
     }
 
     @Override
-    public List<PostDto> getAllByCategory(Category category) {
-        return List.of();
+    public List<PostDto> getAllByCategory(Integer categoryId) {
+        List<Post> posts = this.postRepo.findAllByCategory(this.categoryRepo.findById(categoryId).orElseThrow(() -> new ResourceNotFoundException("Category", "id", categoryId)));
+        return posts.stream().map(post -> this.modelMapper.map(post, PostDto.class)).toList();
     }
 
     @Override
-    public List<PostDto> getAllByUser(User user) {
-        return List.of();
+    public List<PostDto> getAllByUser(Integer userId) {
+        List<Post> posts = this.postRepo.findAllByUser(this.userRepo.findById(userId).orElseThrow(()-> new ResourceNotFoundException("User", "id", userId)));
+        return posts.stream().map(post -> this.modelMapper.map(post, PostDto.class)).toList();
     }
 
     @Override
     public List<PostDto> searchPosts(String keyword) {
-        return List.of();
+        List<Post> posts = this.postRepo.findByTitleContaining(keyword);
+        return posts.stream().map(post -> this.modelMapper.map(post, PostDto.class)).toList();
     }
+
 }
