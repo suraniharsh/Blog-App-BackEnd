@@ -1,5 +1,6 @@
 package com.surani.blog.controllers;
 
+import com.surani.blog.payloads.ApiResponse;
 import com.surani.blog.payloads.Dtos.PostDto;
 import com.surani.blog.services.PostServices;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,9 +26,20 @@ public class PostControllers {
         return new ResponseEntity<>(this.postServices.createPost(postDto, userId, categoryId), HttpStatus.CREATED);
     }
 
+    @PutMapping("/posts/{postId}")
+    public ResponseEntity<PostDto> updatePost(@PathVariable Integer postId, @RequestBody PostDto postDto) {
+        return new ResponseEntity<>(this.postServices.updatePost(postDto, postId), HttpStatus.OK);
+    }
+
     @GetMapping("/posts/{postId}")
     public ResponseEntity<PostDto> getPostById(@PathVariable Integer postId) {
         return new ResponseEntity<>(this.postServices.getPostById(postId), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/posts/{postId}")
+    public ResponseEntity<ApiResponse> deletePost(@PathVariable Integer postId) {
+        this.postServices.deletePost(postId);
+        return new ResponseEntity<>(new ApiResponse("Post deleted successfully"), HttpStatus.OK);
     }
 
     @GetMapping("/posts")
