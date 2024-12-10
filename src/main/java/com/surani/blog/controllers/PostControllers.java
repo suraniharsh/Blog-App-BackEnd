@@ -43,8 +43,11 @@ public class PostControllers {
     }
 
     @GetMapping("/posts")
-    public ResponseEntity<List<PostDto>> getAllPosts() {
-        return new ResponseEntity<>(this.postServices.getAllPosts(), HttpStatus.OK);
+    public ResponseEntity<List<PostDto>> getAllPosts(
+            @RequestParam(value = "pageNumber", defaultValue = "0", required = false) Integer pageNumber,
+            @RequestParam(value = "pageSize", defaultValue = "5", required = false) Integer pageSize
+    ) {
+        return new ResponseEntity<>(this.postServices.getAllPosts(pageNumber, pageSize), HttpStatus.OK);
     }
 
     @GetMapping("/category/{categoryId}/posts")

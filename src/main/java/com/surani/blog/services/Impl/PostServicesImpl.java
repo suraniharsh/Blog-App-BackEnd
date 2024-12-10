@@ -9,6 +9,9 @@ import com.surani.blog.repositorys.UserRepo;
 import com.surani.blog.services.PostServices;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -66,8 +69,10 @@ public class PostServicesImpl implements PostServices {
     }
 
     @Override
-    public List<PostDto> getAllPosts() {
-        List<Post> posts = this.postRepo.findAll();
+    public List<PostDto> getAllPosts(Integer pageNumber, Integer pageSize) {
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        Page<Post> pagePosts = this.postRepo.findAll(pageable);
+        List<Post> posts = pagePosts.getContent();
         return posts.stream().map(post -> this.modelMapper.map(post, PostDto.class)).toList();
     }
 
@@ -79,7 +84,7 @@ public class PostServicesImpl implements PostServices {
 
     @Override
     public List<PostDto> getAllByUser(Integer userId) {
-        List<Post> posts = this.postRepo.findAllByUser(this.userRepo.findById(userId).orElseThrow(()-> new ResourceNotFoundException("User", "id", userId)));
+        List<Post> posts = this.postRepo.findAllByUser(this.userRepo.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User", "id", userId)));
         return posts.stream().map(post -> this.modelMapper.map(post, PostDto.class)).toList();
     }
 
